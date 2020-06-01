@@ -35,3 +35,7 @@ evans --host 127.0.0.1 --proto proto/todo.proto
 ```
 
 To call any of the RPCs listed above, you can just use `call` command (e.g `call AddTodo`)
+
+## Screenshot
+
+![response from client](images/evans.png)
