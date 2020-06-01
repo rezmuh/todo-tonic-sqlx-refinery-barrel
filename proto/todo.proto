@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package todo;
+
+service Action {
+    rpc AddTodo (AddTodoRequest) returns (TodoResponse);
+    rpc AllTodos (EmptyRequest) returns (TodosResponse);
+    rpc Incomplete (EmptyRequest) returns (TodosResponse);
+    rpc GetTodo (TodoRequest) returns (TodoResponse);
+    rpc MarkComplete (TodoRequest) returns (TodoResponse);
+}
+
+message AddTodoRequest {
+    string title = 1;
+}
+
+message EmptyRequest {
+}
+
+message TodoRequest {
+    int32 id = 1;
+}
+
+message TodoResponse {
+    int32 id = 1;
+    string title = 2;
+    bool is_completed = 3;
+}
+
+message TodosResponse {
+    repeated TodoResponse todos = 1;
+}
