@@ -3,13 +3,14 @@ use crate::pb::TodoResponse;
 
 #[derive(sqlx::FromRow, Debug)]
 pub struct Todo {
-    pub id: i32,
+    pub id: i32, // By default, using barrel's types::primary() results in i32
     pub title: String,
     pub is_completed: bool,
 }
 
 type DBResult<T> = Result<T, Box<dyn std::error::Error>>;
 
+// TODO: cleanup and re-format query
 impl Todo {
 
     pub async fn add(pool: &PgPool, title: String) -> DBResult<TodoResponse> {
@@ -19,6 +20,7 @@ impl Todo {
         Ok(todo.into_response())
     }
 
+    // TODO: Is it a heavy operation to convert Todo into TodoResponse?
     pub async fn all(pool: &PgPool) -> DBResult<Vec<TodoResponse>> {
         let todos: Vec<Todo> = sqlx::query_as!(Todo, "SELECT id, title, is_completed FROM todos ORDER by id")
             .fetch_all(pool)
@@ -27,6 +29,7 @@ impl Todo {
         Ok(todo_responses)
     }
 
+    // TODO: Is it a heavy operation to convert Todo into TodoResponse?
     pub async fn incomplete(pool: &PgPool) -> DBResult<Vec<TodoResponse>> {
         let todos: Vec<Todo> = sqlx::query_as!(Todo, "SELECT id, title, is_completed FROM todos WHERE is_completed = false ORDER by id")
             .fetch_all(pool)
@@ -51,6 +54,8 @@ impl Todo {
 
     }
 
+    // Mapping Todo struct with TodoResponse (which is used to display data in GRPC)
+    // TODO: Is there a better way to do it?
     fn into_response(&self) -> TodoResponse {
         TodoResponse {
             id: self.id,

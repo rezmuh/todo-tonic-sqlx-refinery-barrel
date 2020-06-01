@@ -11,6 +11,9 @@ use crate::pb::{
     TodosResponse
 };
 
+// Setting `pool` inside this Struct so we can use
+// the same connection pool (as opposed to ) establishing connection
+// for every function call
 pub struct TodoService {
     pool: PgPool
 }
@@ -23,8 +26,12 @@ impl TodoService {
     }
 }
 
+// Alias this to make it shorter to write
 type ServiceResponse<T> = Result<Response<T>, Status>;
 
+// Action comes from the `Action` service in proto file.
+// Each of the functions inside here were the mapping of rpc calls
+// from proto file. For example AddTodo rpc call becomes add_todo()
  #[tonic::async_trait]
 impl Action for TodoService {
 
@@ -33,11 +40,13 @@ impl Action for TodoService {
         Ok(Response::new(todo))
     }
 
+    // TODO: use stream response instead of repeated
     async fn all_todos(&self, _req: Request<EmptyRequest>) -> ServiceResponse<TodosResponse> {
         let todos = Todo::all(&self.pool).await.unwrap();
         Ok(Response::new(TodosResponse { todos }))
     }
 
+    // TODO: stream response instead of repeated
     async fn incomplete(&self, _req: Request<EmptyRequest>) -> ServiceResponse<TodosResponse> {
         let todos = Todo::incomplete(&self.pool).await.unwrap();
         Ok(Response::new(TodosResponse { todos }))
